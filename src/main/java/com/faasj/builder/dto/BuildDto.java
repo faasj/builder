@@ -1,5 +1,6 @@
 package com.faasj.builder.dto;
 
+import com.faasj.builder.util.State;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ public class BuildDto {
 
     private UUID buildId;
     private UUID functionId;
-    private String state;
+    private State state;
     private Map<String, String> properties;
     private LocalDateTime created;
     private LocalDateTime updated;
