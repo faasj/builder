@@ -58,4 +58,11 @@ public class BuildController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping(value = "status/{functionName}")
+    public ResponseEntity<String> getBuildStatus(@PathVariable String functionName) {
+        String status = service.getBuildStatus(functionName);
+
+        return new ResponseEntity<>(status, HttpStatus.OK);
+    }
 }

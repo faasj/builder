@@ -12,6 +12,7 @@ import java.util.UUID;
 public class FunctionBuildDto {
 
     UUID functionId;
+    String name;
     String code;
     String image;
 }

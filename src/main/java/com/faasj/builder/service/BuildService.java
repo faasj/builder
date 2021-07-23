@@ -16,4 +16,6 @@ public interface BuildService {
     String getBuildLogs();
 
     void deleteBuild(UUID buildId);
+
+    String getBuildStatus(String functionName);
 }
