@@ -3,8 +3,11 @@ package com.faasj.builder.service;
 import com.faasj.builder.dao.BuildRepository;
 import com.faasj.builder.dto.BuildDto;
 import com.faasj.builder.dto.FunctionBuildDto;
+import com.faasj.builder.jenkins.Jenkins;
 import com.faasj.builder.util.State;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,18 +16,21 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BuildServiceImpl implements BuildService {
 
     private final BuildRepository repository;
+    private final Jenkins jenkins;
 
     @Override
+    @SneakyThrows
     public BuildDto startBuild(FunctionBuildDto function) {
         BuildDto build = BuildDto.builder()
                 .functionId(function.getFunctionId())
                 .buildId(UUID.randomUUID())
-                .state(State.BUILDING)
+                .state(State.BUILT)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .properties(Map.of("test", "test"))
@@ -32,16 +38,18 @@ public class BuildServiceImpl implements BuildService {
 
         repository.save(build.getBuildId(), build);
 
+        jenkins.getJenkins();
+        String job = jenkins.build("job", function);
+
+        log.info(job);
+
         return build;
     }
 
     @Override
     public BuildDto getBuild(UUID buildId) {
-        BuildDto buildDto =
-                repository.findBuild(buildId).orElseThrow(() -> new NoSuchElementException("No such element " + buildId));
-        buildDto.setState(State.BUILT);
 
-        return buildDto;
+        return repository.findBuild(buildId).orElseThrow(() -> new NoSuchElementException("No such element " + buildId));
     }
 
     @Override
@@ -59,5 +67,10 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public void deleteBuild(UUID buildId) {
         repository.delete(buildId);
+    }
+
+    @Override
+    public String getBuildStatus(String functionName) {
+        return jenkins.getBuildStatus(functionName);
     }
 }

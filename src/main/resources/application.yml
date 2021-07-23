@@ -1,7 +1,10 @@
 jenkins:
-  url: "http://localhost:8080/"
-  user: admin
-  password: 11011d22461beb771fdf575d59d77cdf30
+  url: ${JENKINS_URL:http://localhost:8080}
+  user: ${JENKINS_USER:admin}
+  password: ${JENKINS_PASSWORD:admin}
+
+  requirements: "click==8.0.1\\ncolorama==0.4.4\\nFlask==2.0.1\\nitsdangerous==2.0.1\\nJinja2==3.0.1\\nMarkupSafe==2.0.1\\nWerkzeug==2.0.1"
+  dockerfile: "FROM python:3.8-slim-buster\\nWORKDIR /app\\nCOPY requirements.txt requirements.txt\\nRUN pip3 install -r requirements.txt\\nCOPY . .\\nCMD [\"python3\", \"app.py\"]"
 logging:
   level:
     org:
